@@ -809,8 +809,8 @@ def MultipleIntegral_st(f,X,XR):
     for I_f in DIX[:-1]:
         Integrand.append(tex(I_f))
 
-    text0="\\begin{align}"
-    text5="\end{align}"
+    text0="\\begin{align*}"
+    text5="\end{align*}"
     
     #domain="\large{\left\{"
     domain="\left\{\large{\\begin{array}{l}"

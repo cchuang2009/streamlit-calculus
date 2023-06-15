@@ -15,21 +15,6 @@ import requests
 #sys.stdout = output
 
 
-def MultipleInt(f, X, XR):
-    # Convert the input strings to SymPy expressions
-    f_expr = sympify(f)
-    X_expr = [sympify(var) for var in X]
-
-    # Create a dictionary to hold the symbols and their corresponding ranges
-    variables = {var: range_ for var, range_ in zip(X_expr, XR)}
-
-    # Call the MultipleIntegral function from the imported module
-    result = MultipleIntegral(f_expr, X_expr, variables)
-
-    # Print the LaTeX output
-    print(latex(result))
-
-
 # Streamlit app
 def main():
     st.title("Multiple Integral Calculator")
