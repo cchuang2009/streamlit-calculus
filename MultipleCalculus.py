@@ -59,10 +59,11 @@ from sympy import pi,sqrt,sin,cos,log,exp,oo,E,tan,Piecewise,asin,atan
 
 # Variable declared
 # x,y,z: variable Cartesian Corrdinates
-# r,Theta: r,𝛉 in Polar Coordinates
-# Rho,Theta,Phi: 𝛒, 𝛉, 𝛟 in Spherical Coordinates
+# r,Theta: r,θ in Polar Coordinates
+# Rho,Theta,Phi: ρ,θ ,ϕ in Spherical Coordinates
 
-x,y,z,r,t,rho,phi,theta,u,v,w,a,b,c,m,n,l,p,T,𝝆,θ,𝝋=symbols("x y z r 𝜽 𝝆 𝝋 𝜽 u v w a b c m n l p T 𝝆 θ 𝝋")
+#x,y,z,r,t,rho,phi,theta,u,v,w,a,b,c,m,n,l,p,T,ρ,θ ,ϕ =symbols("x y z r θ  rho phi theta u v w a b c m n l p T rho phi theta")
+x,y,z,r,t,rho,phi,theta,u,v,w,a,b,c,m,n,l,p,T=symbols("x y z r theta rho phi theta u v w a b c m n l p T")
 r,Rho,Phi,Theta=symbols("r,rho,phi,theta",positive=True)
 
 a,b,c=symbols("a,b,c")
@@ -1071,8 +1072,94 @@ def TripleInt_Cylind(f,X,XU,U,xr,yr,zr):
     
     
     text=text0+textfunc+textfunc1+textf+text_desc+text0+text1+text2+text3+text4+textf;
-    return Latex(text)
+    return text
+    
+def TripleInt_Cylind_st(f,X,XU,U,xr,yr,zr):
+    """
+    Triple integral in General Coordinates
+    input: ∫ dz ∫ dr ∫ f(r cos𝛉,r sin𝛉,z) rd𝛉
+           f: f(x,y,z), which will be automatically transformed from (x,y,z) to (r cos𝛉,r sin𝛉, z)
+           X: (x,y,z), variable pair in Cartesian Coordinates
+           XU: (x(u,v,z),y(u,v,z))
+    𝜓       U: (u,v)
+           xr: (x0,x1) of r
+           yr: (y0,y1) of 𝛉
+           zr: (z0,z1) of z
 
+    output: details of integration and value  
+    
+    Should  calculate Jacobian and find out integation range in Polar Coordinates
+    
+    Demo:
+    > TripleInt_Cylind(x*y*z,[x,y,z],[r*cos(Theta),r*sin(Theta),z],[r,Theta,z],[0,1],[0,pi],[0,1])
+    
+    
+    """
+    Jacobian=r;
+    
+    #Jacobian=r
+    f0=f
+    f0_latex=latex(eval(str(f0)))
+    
+    fp=simplify(((f+0*X[0]).subs({X[0]:XU[0],X[1]:XU[1],X[2]:XU[2]})))
+    fp_latex=latex(fp)
+    fpp_latex=latex(fp*Jacobian)
+    
+    f=f*Jacobian
+    f_latex=tex(f)
+    X0=latex(X[0])
+    X1=latex(X[1])
+    
+    Izz=integrate(fp*Jacobian,U[2])
+    Izz_latex=tex(Izz)                
+
+    Iz=integrate(fp*Jacobian,[U[2],zr[0],zr[1]])
+    Iz_latex=tex(Iz)
+    
+    Iyy=integrate(Iz,U[1])
+    Iyy_latex=tex(Iyy)              
+
+    Iy=integrate(Iz,[U[1],yr[0],yr[1]])
+    Iy_latex=tex(Iy)
+       
+    II= integrate(Iy,U[0])
+    II_latex=tex(II)
+    
+    I=integrate(Iy,[U[0],xr[0],xr[1]])
+    I_latex=tex(I)
+    
+    zr0=tex(zr[0])
+    zr1=tex(zr[1])
+    yr0=tex(yr[0])
+    yr1=tex(yr[1])
+    
+    
+    text0="\\begin{eqnarray}"
+    textfunc="\iiint_{V} \color{brown}{%s} dA&=& \iiint_{V} \color{brown}{%s} dx dy dz \cr " %(f0_latex,f0_latex)
+    textfunc1="&=& \iiint_{V} \color{brown} {\left( %s \\right) }\cdot \color{blue}{%s} d %s d %s d %s \cr" %(fp_latex,latex(Jacobian),\
+                                                                     latex(U[0]),latex(U[1]),latex(U[2]))
+       
+    text_desc="where $%s$ is the absolute value of determinant of Jacobian, $\Large{{||\\frac{\partial (x,y,z)}{\partial (%s,%s,%s)}||}}$. Thus" %(Jacobian, \
+                                                                                            latex(U[0]),latex(U[1]),latex(U[2]))
+    text0="\\begin{align*}"
+    textf="\end{align*}"
+  
+    text1="\int^{%s}_{%s}d{%s}\int^{%s}_{%s}d{%s}\int^{%s}_{%s}\color{brown}{%s}d{%s} " %(xr[1],xr[0],U[0],latex(yr[1]),latex(yr[0]),latex(U[1]), \
+                                                                                          zr[1],zr[0],fpp_latex,latex(U[2]));
+    
+    text2="&=& \int^{%s}_{%s} d%s \int^{%s}_{%s}\left.\color{brown}{%s}\\right|^{\large{%s}}_{\large{%s}}d{%s}\cr" %(xr[1],xr[0],latex(U[0]), \
+                                                                    latex(yr[1]),latex(yr[0]),Izz_latex,zr1,zr0,latex(U[1]))
+    
+    
+    text3="&=& \int^{%s}_{%s}\left.\color{brown}{%s}\\right|^{\large{%s}}_{\large{%s}}d{%s}\cr" %(xr[1],xr[0], \
+                                                                    Iyy_latex,yr1,yr0,U[0])
+
+    text4="&=& \int^{%s}_{%s}\color{brown}{%s}d{%s}\cr&=&\left.{\color{brown}{%s}}\\right|^{\large{%s}}_{\large{%s}}={%s}\cr" %(
+            xr[1],xr[0],Iy_latex,U[0], II_latex,xr[1],xr[0],I_latex)
+    
+    
+    text=text0+textfunc+textfunc1+text1+text2+text3+text4+textf;
+    return text
 
 def TripleInt_Spherical(f,X,XU,U,xr,yr,zr):
     """
@@ -1097,7 +1184,7 @@ def TripleInt_Spherical(f,X,XU,U,xr,yr,zr):
     > TripleInt_Spherical(1,X,XU,U,[0,1],[0,2*pi],[0,pi])
     """
     Jacobian=Rho**2*sin(Phi);
-    
+    #Jacobian=rho**2*sin(phi)
     #Jacobian=r
     f0=f
     f0_latex=tex(f0)
@@ -1160,7 +1247,98 @@ def TripleInt_Spherical(f,X,XU,U,xr,yr,zr):
     
     
     text=text0+textfunc+textfunc1+textf+text_desc+text0+text1+text2+text3+text4+textf;
-    return Latex(text)
+    return text
+
+def TripleInt_Spherical_st(f,X,XU,U,xr,yr,zr):
+    """
+    Triple integral in Spherical Coordinates
+    input: ∫ dz ∫ dr ∫ f(r cos𝛉,r sin𝛉,z) rd𝛉
+           f: f(x,y,z), which will be automatically transformed from (x,y,z) to ( 𝜌cos𝛉sin𝜙,𝜌sin𝛉sin𝜙, 𝜌cos𝜙)
+           X: (x,y,z), variable pair in Cartesian Coordinates
+           XU: (x(u,v,z),y(u,v,z))
+           U: (u,v)
+           xr: (x0,x1) of 𝜌
+           yr: (y0,y1) of 𝛉
+           zr: (z0,z1) of 𝜙
+
+    output: details of integration and value  
+    
+    Should  calculate Jacobian and find out integation range in Polar Coordinates
+    
+    Demo:
+    > X=[x,y,z]
+    > XU=[Rho*cos(Theta)*sin(Phi),Rho*sin(Theta)*sin(Phi),Rho*cos(Phi)]
+    > U=[Rho,Theta,Phi]
+    > TripleInt_Spherical(1,X,XU,U,[0,1],[0,2*pi],[0,pi])
+    """
+    Jacobian=rho**2*sin(phi);
+    
+    #Jacobian=r
+    f0=f
+    f0_latex=tex(f0)
+    
+    fp=simplify(((f+0*X[0]).subs({X[0]:XU[0],X[1]:XU[1],X[2]:XU[2]})))
+    fp_latex=latex(fp)
+    fpp_latex=latex(fp*Jacobian)
+    
+    f=f*Jacobian
+    f_latex=tex(f)
+    X0=latex(X[0])
+    X1=latex(X[1])
+    
+    Izz=integrate(fp*Jacobian,U[2])
+    Izz_latex=tex(Izz)               
+
+    Iz=integrate(fp*Jacobian,[U[2],zr[0],zr[1]])
+    Iz_latex=tex(Iz)
+    
+    Iyy=integrate(Iz,U[1])
+    Iyy_latex=tex(Iyy)                 
+
+    Iy=integrate(Iz,[U[1],yr[0],yr[1]])
+    Iy_latex=tex(Iy)
+       
+    II= integrate(Iy,U[0])
+    II_latex=tex(II)
+    
+    I=integrate(Iy,[U[0],xr[0],xr[1]])
+    I_latex=tex(I)
+    
+    zr0=tex(zr[0])
+    zr1=tex(zr[1])
+    yr0=tex(yr[0])
+    yr1=tex(yr[1])
+    
+    
+    text0="\\begin{eqnarray}"
+    textfunc="\iiint_{V} \color{brown}{%s} dA&=& \iiint_{V} \color{brown}{%s} dx dy dz \cr " %(f0_latex,f0_latex)
+    textfunc1="&=& \iiint_{V} \color{brown} {\left( %s \\right) }\cdot \color{blue}{%s} d %s d %s d %s \cr" %(fp_latex,latex(Jacobian),\
+                                                                     latex(U[0]),latex(U[1]),latex(U[2]))
+       
+    text_desc="where $%s$ is the absolute value of determinant of Jacobian, $\Large{{||\\frac{\partial (x,y,z)}{\partial (%s,%s,%s)}||}}$. Thus" %(latex(Jacobian), \
+                                                                                            latex(U[0]),latex(U[1]),latex(U[2]))
+    text0="\\begin{align*}"
+    textf="\end{align*}"
+  
+    text1="\int^{%s}_{%s}d{%s}\int^{%s}_{%s}d{%s}\int^{%s}_{%s}\color{brown}{%s}d{%s} " %(xr[1],xr[0],latex(U[0]),latex(yr[1]),latex(yr[0]),latex(U[1]), \
+                                                                                          zr[1],zr[0],fpp_latex,latex(U[2]));
+    
+    text2="&=& \int^{%s}_{%s}d{%s}\int^{%s}_{%s}\left.\color{brown}{%s}\\right|^{\large{%s}}_{\large{%s}}d{%s}\cr" %(xr[1],xr[0],latex(U[0]), \
+                                                                    latex(yr[1]),latex(yr[0]),Izz_latex,zr1,zr0,latex(U[1]))
+    
+    
+    text3="&=& \int^{%s}_{%s}\left.\color{brown}{%s}\\right|^{\large{%s}}_{\large{%s}}d{%s}\cr" %(xr[1],xr[0], \
+                                                                    Iyy_latex,yr1,yr0,latex(U[0]))
+
+    text4="&=& \int^{%s}_{%s}\color{brown}{%s}d{%s}\cr&=&\left.{\color{brown}{%s}}\\right|^{\large{%s}}_{\large{%s}}={%s}\cr" %(xr[1],xr[0],Iy_latex,latex(U[0]), II_latex,xr[1],xr[0],I_latex)
+    #text4="&=& \int^{%s}_{%s}\color{brown}{%s}d{%s}\cr&=&\left.{\color{brown}{%s}}\\right|^{{%s}}_{{%s}}={%s}\cr" %(xr[1],xr[0],Iy_latex,latex(U[0]), II_latex,xr[1],xr[0],I_latex)
+    #text4="&=& "
+    
+    #text=text0+textfunc+textfunc1+textf+text0+text1+text2+text3+text4+textf;
+    #text=text0+textfunc+textfunc1+text1+text2+text3+text4+textf;
+    text=text0+textfunc+textfunc1+text1+text2+text3+text4+ textf
+    return text
+    
 
 def TripleInt_UVW(f,X,XU,U,XR):
     """
@@ -1262,6 +1440,7 @@ def TripleInt_UVW(f,X,XU,U,XR):
     
     
     text=text0+textfunc+textfunc1+textf+text_desc+text0+text1+text2+text22+text3+text4+textf;
+    #text=text0+textfunc+textfunc1+textf+text2+text22+text3+text4+textf;
     return Latex(text)
 
 # Differentiation for Multiple-variable Functions
