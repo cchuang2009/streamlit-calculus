@@ -43,14 +43,14 @@ def main():
         with col2:
             X = st.text_input("Enter the variables (comma-separated):", "[x,y,z]")
         with col3:
-            U = st.text_input("Enter the variables for ranges (comma-separated):", "[ρ,φ,θ]")
+            U = st.text_input("Enter the variables for ranges (comma-separated):", "[rho,theta,phi]")
         col4, col5, col6 = st.columns(3) 
         with col4:
-            XR = st.text_input("Range of ρ:", "[0,1]")
+            XR = st.text_input(r"Range of rho:", "[0,1]")
         with col5:
-            XT = st.text_input("Range of φ:", "[0,pi]")  
+            XT = st.text_input(r"Range of phi:", "[0,pi]")  
         with col6:
-            XP = st.text_input("Range of θ:", "[0,pi/2]")    
+            XP = st.text_input(r"Range of theta:", "[0,pi/2]")    
         
     elif integral_type == "Triple Integral (Cylindrical)":
         col1, col2, col3 = st.columns(3)
@@ -59,7 +59,7 @@ def main():
         with col2:
             X = st.text_input("Enter the variables (comma-separated):", "[x,y,z]")
         with col3:
-            U = st.text_input("Enter the variables for ranges (comma-separated):", "[r,θ,z]")
+            U = st.text_input("Enter the variables for ranges (comma-separated):", "[r,theta,z]")
         col4, col5, col6 = st.columns(3) 
         with col4:
             XR = st.text_input("Range of r:", "[0,1]")
