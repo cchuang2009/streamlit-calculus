@@ -62,9 +62,9 @@ from sympy import pi,sqrt,sin,cos,log,exp,oo,E,tan,Piecewise,asin,atan
 # r,Theta: r,θ in Polar Coordinates
 # Rho,Theta,Phi: ρ,θ ,ϕ in Spherical Coordinates
 
-#x,y,z,r,t,rho,phi,theta,u,v,w,a,b,c,m,n,l,p,T,ρ,θ ,ϕ =symbols("x y z r θ  rho phi theta u v w a b c m n l p T rho phi theta")
+#x,y,z,r,t,rho,phi,theta,u,v,w,a,b,c,m,n,l,p,T,ρ,θ ,ϕ=symbols("x y z r theta rho phi theta u v w a b c m n l p T  rho theta phi")
 x,y,z,r,t,rho,phi,theta,u,v,w,a,b,c,m,n,l,p,T=symbols("x y z r theta rho phi theta u v w a b c m n l p T")
-r,Rho,Phi,Theta=symbols("r,rho,phi,theta",positive=True)
+Rho,Phi,Theta=symbols("rho,phi,theta",positive=True)
 
 a,b,c=symbols("a,b,c")
 
