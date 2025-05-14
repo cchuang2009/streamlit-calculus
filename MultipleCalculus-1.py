@@ -860,36 +860,67 @@ def MultipleIntegral_st(f,X,XR):
 
     return text
 
-def PolarDoubleIntegration(f, U, Ur):
+def DoubleInt_polar_v3_st(f,X,xr,yr,Jacobian=r):
     """
-    Perform polar coordinate integration in specified variable order.
-
-    Args:
-        f: symbolic function in terms of x, y
-        U: list like [r, theta] or [theta, r] — order of integration
-        r_range: list like [0, 1]
-        theta_range: list like [0, 2*pi]
-
-    Returns:
-        LaTeX result of polar integral
+    Double integral in Polar Coordinates
+    input: ∫ dr ∫ f(r cos𝛉,r sin𝛉) rd𝛉
+           f: f(x,y), which will be automatically transformed from (x,y) to (r cos𝛉,r sin𝛉)
+           X: (x,y), variable pair in Cartesian Coordinates
+           xr: (x0,x1) of r
+           yr: (y0,y1) of 𝛉
+           Jacobian: r
+    output: details of integration and value  
+    
+    Should  calculate Jacobian and find out integation range in Polar Coordinates
     """
-    r, theta = symbols("r theta")
-    x, y = symbols("x y")
 
-    # Substitute to polar and apply Jacobian
-    f_polar = f.subs({x: r * cos(theta), y: r * sin(theta)}) * r
+    Theta=symbols("theta")
+    #Jacobian=r
+    f0=f
+    f0_latex=tex(f0)
+    
+    fp=simplify(((f+0*X[0]).subs({X[0]**2+X[1]**2:r**2,X[0]:r*cos(Theta),X[1]:r*sin(Theta)})))
+    fp_latex=latex(fp)
+    fpp_latex=latex(fp*Jacobian)
+    
+    f=f*r
+    f_latex=latex(eval(str(f)))
+    X0=latex(X[0])
+    X1=latex(X[1])
+    
+    Iyy=integrate(fp*Jacobian,theta)
+    Iyy_latex=latex(eval(str(Iyy)))                 
 
-    # Build bounds according to U order
-    bounds = []
-    for var in U:
-        if str(var) == "r":
-            bounds.append(Ur[0])
-        elif str(var) == "theta":
-            bounds.append(Ur[1])
-        else:
-            raise ValueError(f"Invalid variable in U: {var}")
-
-    return MultipleIntegral(f_polar, U, bounds)
+    Iy=integrate(fp*Jacobian,[theta,yr[0],yr[1]])
+    Iy_latex=latex(eval(str(Iy)))
+       
+    II= integrate(Iy,r)
+    II_latex=latex(eval(str(II)))
+    
+    I=integrate(Iy,[r,xr[0],xr[1]])
+    I_latex=latex(eval(str(I)))
+    
+    yr0=latex(eval(str(yr[0])))
+    yr1=latex(eval(str(yr[1])))
+    
+    
+    text0="\\begin{align}"
+    textfunc="\iint_{D} \color{brown}{%s} dA&=& \iint_{D} \color{brown}{%s} dx dy  \cr " %(f0_latex,f0_latex)
+    textfunc1="&=& \iint_{D} \color{brown}{%s}  \color{blue}{r} drd %s \cr" %(fp_latex,latex(Theta))
+       
+    text_desc="where $%s$ is the absolute value of determinant of Jacobian, ${||\\frac{\partial (x,y)}{\partial (r,\\theta)}||}$. Thus" %(Jacobian)
+    
+    text1="\int^{%s}_{%s}d{%s}\int^{%s}_{%s}\color{brown}{%s}d{%s} " %(xr[1],xr[0],r,yr1,yr0,
+                                                               fpp_latex,latex(Theta));
+    
+    text2="&=& \int^{%s}_{%s}\left.\color{brown}{%s}\\right|^{\large{%s}}_{\large{%s}}d{%s}\cr" %(xr[1],xr[0],\
+                                                                    Iyy_latex,yr1,yr0,r)
+    text3="&=& \int^{%s}_{%s}\color{brown}{%s}d{%s}\cr&=&\left.{\color{brown}{%s}}\\right|^{\large{%s}}_{\large{%s}}={%s}\cr" %(
+            xr[1],xr[0],Iy_latex,r, II_latex,xr[1],xr[0],I_latex)
+    textf="\end{align}"
+    
+    text=text0+textfunc+textfunc1+text1+text2+text3+textf;
+    return text
 
 def DoubleInt_polar_v3(f,X,xr,yr,Jacobian=r):
     """
@@ -952,6 +983,8 @@ def DoubleInt_polar_v3(f,X,xr,yr,Jacobian=r):
     
     text=text0+textfunc+textfunc1+textf+text_desc+text0+text1+text2+text3+textf;
     return Latex(text)
+
+
 
 def DoubleInt_UV_v3(f,X,XU,U,xr,yr):
     """

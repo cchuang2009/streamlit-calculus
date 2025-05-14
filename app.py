@@ -1,106 +1,100 @@
 import streamlit as st
 from sympy import *
 from sympy.printing.latex import latex
-from io import StringIO
 from MultipleCalculus import *
-import sys
-import requests
 
-
-# Import the MultipleCalculus module from GitHub
-#url = 'https://raw.githubusercontent.com/cchuang2009/2022-1/main/Calculus/MultipleCalculus.py'
-#exec(requests.get(url).text)
-
-# Redirect print statements to capture LaTeX output
-#output = StringIO()
-#sys.stdout = output
-
-
-# Streamlit app
-# Streamlit app
-# Streamlit app
-# Streamlit app
-# Streamlit app
-# Streamlit app
 def main():
     st.title("Multiple Integral Calculator")
 
-    # Add option selection
-    integral_type = st.selectbox("Select Integral Type", ["Multiple Integral (In Cartesian Coordinated)", "Triple Integral (Spherical)", "Triple Integral (Cylindrical)"])
+    integral_type = st.selectbox("Select Integral Type", [
+        "Multiple Integral (In Cartesian Coordinated)", 
+        "Double Integral (Polar)",
+        "Triple Integral (Cylindrical)", 
+        "Triple Integral (Spherical)",
+        "Triple Integral (General Coordinate [U,V,W])"
+    ])
 
-    # Input variables and ranges based on the selected integral type
     if integral_type == "Multiple Integral (In Cartesian Coordinated)":
-        col1, col2 = st.columns(2)
-        with col1:
-            f = st.text_input("Enter the function:", value="x*y")
-        with col2:
-            X = st.text_input("Enter the variables (comma-separated):", "[x,y]")
-        XR = st.text_input("Enter the ranges (comma-separated):", "[[0,1],[0,2]]")
-    elif integral_type == "Triple Integral (Spherical)":
-        col1, col2, col3 = st.columns(3)
-        with col1:
-            f = st.text_input("Enter the function:", value="y**2")
-        with col2:
-            X = st.text_input("Enter the variables (comma-separated):", "[x,y,z]")
-        with col3:
-            U = st.text_input("Enter the variables for ranges (comma-separated):", "[rho,theta,phi]")
-        col4, col5, col6 = st.columns(3) 
-        with col4:
-            XR = st.text_input(r"Range of rho:", "[0,1]")
-        with col5:
-            XT = st.text_input(r"Range of phi:", "[0,pi]")  
-        with col6:
-            XP = st.text_input(r"Range of theta:", "[0,pi/2]")    
-        
+        f = st.text_input("Enter the function:", value="x*y")
+        X = st.text_input("Enter the variables (comma-separated):", "[x,y]")
+        XR = st.text_input("Enter the ranges (e.g. [[0,1],[0,2]]):", "[[0,1],[0,2]]")
+
+    elif integral_type == "Double Integral (Polar)":
+        f = st.text_input("Enter the function:", value="x**2 + y**2")
+        U = st.text_input("Polar variables integration order (e.g. [r,theta] or [theta,r]):", "[r,theta]")
+        U_range = st.text_input("Range of [r,theta] (e.g. [[0,1],[0,pi/2]]:", "[[0,1],[0,pi/2]]")
+        #theta_range = st.text_input("Range of θ (e.g. [0,2*pi]):", "[0,2*pi]")
+
     elif integral_type == "Triple Integral (Cylindrical)":
-        col1, col2, col3 = st.columns(3)
-        with col1:
-            f = st.text_input("Enter the function:", value="x*y*z")
-        with col2:
-            X = st.text_input("Enter the variables (comma-separated):", "[x,y,z]")
-        with col3:
-            U = st.text_input("Enter the variables for ranges (comma-separated):", "[r,theta,z]")
-        col4, col5, col6 = st.columns(3) 
-        with col4:
-            XR = st.text_input("Range of r:", "[0,1]")
-        with col5:
-            XT = st.text_input("Range of θ:", "[0,2*pi]")  
-        with col6:
-            XP = st.text_input("Range of z:", "[0,3]")
-            #XR = st.text_input("Enter the ranges (comma-separated):", "[[0,1],[0,2*pi],[0,3]]")
+        f = st.text_input("Enter the function:", value="x*y*z")
+        X = st.text_input("Cartesian variables (e.g. [x,y,z]):", "[x,y,z]")
+        U = st.text_input("Cylindrical variables (e.g. [r,theta,z]):", "[r,theta,z]")
+        rR = st.text_input("Range of r:", "[0,1]")
+        tR = st.text_input("Range of θ:", "[0,2*pi]")
+        zR = st.text_input("Range of z:", "[0,3]")
+
+    elif integral_type == "Triple Integral (Spherical)":
+        f = st.text_input("Enter the function:", value="y**2")
+        X = st.text_input("Cartesian variables (e.g. [x,y,z]):", "[x,y,z]")
+        U = st.text_input("Spherical variables (e.g. [rho,theta,phi]):", "[rho,theta,phi]")
+        rhoR = st.text_input("Range of ρ:", "[0,1]")
+        phiR = st.text_input("Range of φ:", "[0,pi]")
+        thetaR = st.text_input("Range of θ:", "[0,pi/2]")
+
+    elif integral_type == "Triple Integral (General Coordinate [U,V,W])":
+        f = st.text_input("Enter the function:", value="x*y*z")
+        X = st.text_input("Cartesian variables (e.g. [x,y,z]):", "[x,y,z]")
+        U = st.text_input("General coordinates (e.g. [u,v,w]):", "[u,v,w]")
+        XU = st.text_input("Transform to Cartesian (e.g. [u+v, v+w, u-v]):", "[u+v, v+w, u-v]")
+        xR = st.text_input("Range of u:", "[0,1]")
+        yR = st.text_input("Range of v:", "[0,1]")
+        zR = st.text_input("Range of w:", "[0,1]")
 
     if st.button("Calculate"):
-        X_Sp = sympify(X)
         f_Sp = sympify(f)
-        
 
         if integral_type == "Multiple Integral (In Cartesian Coordinated)":
+            X_Sp = sympify(X)
             XR_Sp = sympify(XR)
             result = MultipleIntegral(f_Sp, X_Sp, XR_Sp)
-            
-        elif integral_type == "Triple Integral (Spherical)":
-            # Default coordinate transformation
-            XU = "[rho*cos(theta)*sin(phi),rho*sin(theta)*sin(phi),rho*cos(phi)]"
-            
-            U_Sp = sympify(U)
-            XU_Sp = sympify(XU)
-            XR_Sp= sympify(XR)
-            XT_Sp= sympify(XT)
-            XP_Sp= sympify(XP)
-            
-            result = TripleInt_Spherical_st(f_Sp, X_Sp, XU_Sp, U_Sp, XR_Sp, XT_Sp, XP_Sp)
-            #st.write(r"$ρ θ φ\frac{\pi^{2} ρ^{2} \sin{\left(φ \right)}}{24}$")
-        elif integral_type == "Triple Integral (Cylindrical)":
-            XU = "[r*cos(theta),r*sin(theta),z]"
-            
-            U_Sp = sympify(U)
-            XU_Sp = sympify(XU)
-            XR_Sp= sympify(XR)
-            XT_Sp= sympify(XT)
-            XP_Sp= sympify(XP)
-            result = TripleInt_Cylind_st(f_Sp, X_Sp, XU_Sp, U_Sp, XR_Sp, XT_Sp, XP_Sp)
 
-        # Display the result
-        st.latex(rf'''{result}''')
+        elif integral_type == "Double Integral (Polar)":
+            f_Sp = sympify(f)
+            U_Sp = sympify(U)
+            Ur_Sp = sympify(U_range)
+            result = PolarDoubleIntegration(f_Sp, U_Sp, Ur_Sp)
+
+        elif integral_type == "Triple Integral (Cylindrical)":
+            X_Sp = sympify(X)
+            U_Sp = sympify(U)
+            XU = "[r*cos(theta),r*sin(theta),z]"
+            XU_Sp = sympify(XU)
+            rR_Sp = sympify(rR)
+            tR_Sp = sympify(tR)
+            zR_Sp = sympify(zR)
+            result = TripleInt_Cylind_st(f_Sp, X_Sp, XU_Sp, U_Sp, rR_Sp, tR_Sp, zR_Sp)
+
+        elif integral_type == "Triple Integral (Spherical)":
+            X_Sp = sympify(X)
+            U_Sp = sympify(U)
+            XU = "[rho*cos(theta)*sin(phi), rho*sin(theta)*sin(phi), rho*cos(phi)]"
+            XU_Sp = sympify(XU)
+            rhoR_Sp = sympify(rhoR)
+            phiR_Sp = sympify(phiR)
+            thetaR_Sp = sympify(thetaR)
+            result = TripleInt_Spherical_st(f_Sp, X_Sp, XU_Sp, U_Sp, rhoR_Sp, thetaR_Sp, phiR_Sp)
+
+        elif integral_type == "Triple Integral (General Coordinate [U,V,W])":
+            X_Sp = sympify(X)
+            U_Sp = sympify(U)
+            XU_Sp = sympify(XU)
+            xR_Sp = sympify(xR)
+            yR_Sp = sympify(yR)
+            zR_Sp = sympify(zR)
+            result = TripleInt_Cylind_st(f_Sp, X_Sp, XU_Sp, U_Sp, xR_Sp, yR_Sp, zR_Sp)
+
+        st.latex(rf"{result}")
+
 if __name__ == '__main__':
     main()
+
