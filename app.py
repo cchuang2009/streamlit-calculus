@@ -62,6 +62,11 @@ def main():
             f_Sp = sympify(f)
             U_Sp = sympify(U)
             Ur_Sp = sympify(U_range)
+            
+            f_Sp = f_Sp.replace(
+                      lambda expr: expr.is_Add and set(expr.args) == {x**2, y**2},
+                      lambda _: r**2
+    )
             result = PolarDoubleIntegration(f_Sp, U_Sp, Ur_Sp)
 
         elif integral_type == "Triple Integral (Cylindrical)":
@@ -72,6 +77,10 @@ def main():
             rR_Sp = sympify(rR)
             tR_Sp = sympify(tR)
             zR_Sp = sympify(zR)
+            #f_Sp = f_Sp.replace(
+            #            lambda expr: expr.is_Add and set(expr.args) == {x**2, y**2},
+            #            lambda _: r**2
+            #          )
             result = TripleInt_Cylind_st(f_Sp, X_Sp, XU_Sp, U_Sp, rR_Sp, tR_Sp, zR_Sp)
 
         elif integral_type == "Triple Integral (Spherical)":
